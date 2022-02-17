@@ -42,6 +42,7 @@ dependencies:
   firebase_database: ^9.0.4
   flutter_local_notifications: ^5.0.0+4
   cloud_functions:
+  http:
 
 
 dev_dependencies:

@@ -5,16 +5,15 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:geolocator/geolocator.dart';
 
-
 class MapsScreen extends StatefulWidget {
-
   @override
   _MapsScreenState createState() => _MapsScreenState();
 }
 
-class _MapsScreenState extends State<MapsScreen> with SingleTickerProviderStateMixin {
+class _MapsScreenState extends State<MapsScreen>
+    with SingleTickerProviderStateMixin {
   Completer<GoogleMapController> _controller = Completer();
-  Map<MarkerId, Marker> markers = <MarkerId, Marker>{};
+  List<Marker> markers = [];
   MarkerId? selectedMarker;
   int _markerIdCounter = 1;
   LatLng? markerPosition;
@@ -25,19 +24,17 @@ class _MapsScreenState extends State<MapsScreen> with SingleTickerProviderStateM
     zoom: 14.4746,
   );
 
-  static  CameraPosition _kLake = CameraPosition(
+  static CameraPosition _kLake = CameraPosition(
       bearing: 192.8334901395799,
       target: LatLng(37.43296265331129, -122.08832357078792),
       tilt: 59.440717697143555,
       zoom: 19.151926040649414);
 
-
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
 
-    _determinePosition().then((pos){
+    _determinePosition().then((pos) {
       print('Position: $pos');
 
       setState(() {
@@ -49,51 +46,44 @@ class _MapsScreenState extends State<MapsScreen> with SingleTickerProviderStateM
       });
       _goToUserLocation();
     });
-
   }
 
   @override
   Widget build(BuildContext context) {
+
     return new Scaffold(
       body: GoogleMap(
         mapType: MapType.hybrid,
+        mapToolbarEnabled: true,
+        myLocationButtonEnabled: true,
         initialCameraPosition: _kGooglePlex,
-        markers: Set<Marker>.of(markers.values),
+        markers: markers.toSet(),
         onMapCreated: (GoogleMapController controller) {
-
           _controller.complete(controller);
-          // _add(userLocation?.target.latitude ?? 0, userLocation?.target.longitude ?? 0);
         },
       ),
     );
   }
-
 
   Future<void> _goToUserLocation() async {
     if (userLocation != null) {
       final GoogleMapController controller = await _controller.future;
       controller.animateCamera(CameraUpdate.newCameraPosition(userLocation!));
 
-
-      // TODO: Create new markers on the MAP
-      _addMarker(userLocation?.target.latitude ?? 0, userLocation?.target.longitude ?? 0); // user location marker
-      _addMarker(30.211111, 30.222222);
-      _addMarker(30.211111, 31.222222);
+      _addMarker(userLocation?.target.latitude ?? 0,
+          userLocation?.target.longitude ?? 0);
+      _addMarker(37.43296265331129, -122.08832357078792);
     }
-
   }
 
-  void _addMarker(double lat,double lng) {
+  void _addMarker(double lat, double lng) {
     final int markerCount = markers.length;
 
-    if (markerCount == 12) {
-      return;
-    }
-
-    final String markerIdVal = 'marker_id_$_markerIdCounter';
-    _markerIdCounter++;
+    // if (markerCount == 12) {
+    //   return;
+    // }
+    final String markerIdVal = '${Random().nextDouble()}';
     final MarkerId markerId = MarkerId(markerIdVal);
-
     final Marker marker = Marker(
       markerId: markerId,
       position: LatLng(
@@ -101,20 +91,15 @@ class _MapsScreenState extends State<MapsScreen> with SingleTickerProviderStateM
         lng + cos(_markerIdCounter * pi / 6.0) / 20.0,
       ),
       infoWindow: InfoWindow(title: markerIdVal, snippet: '*'),
-
     );
 
-    setState(() {
-      markers[markerId] = marker;
-    });
+    markers.add(marker);
+    setState(() {});
   }
 
   void _remove(MarkerId markerId) {
-    setState(() {
-      if (markers.containsKey(markerId)) {
-        markers.remove(markerId);
-      }
-    });
+    markers.removeWhere((element) => element.markerId == markerId);
+    setState(() {});
   }
 }
 

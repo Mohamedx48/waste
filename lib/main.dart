@@ -1,4 +1,3 @@
-
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +8,6 @@ import 'package:smartcity_app/screens/maps-screen.dart';
 import 'package:smartcity_app/screens/worker-home.dart';
 import 'screens/screens.dart';
 
-
 const AndroidNotificationChannel channel = AndroidNotificationChannel(
     'high_importance_channel', // id
     'High Importance Notifications', // title
@@ -17,25 +15,23 @@ const AndroidNotificationChannel channel = AndroidNotificationChannel(
     importance: Importance.high,
     playSound: true);
 
-
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-FlutterLocalNotificationsPlugin();
+    FlutterLocalNotificationsPlugin();
 
-final androidDetails=NotificationDetails(
+final androidDetails = NotificationDetails(
     android: AndroidNotificationDetails(
-      channel.id,
-      channel.name,
-      channel.description,
-      color: Colors.blue,
-      playSound: true,
-      icon: '@mipmap/ic_launcher',
-    ));
+  channel.id,
+  channel.name,
+  channel.description,
+  color: Colors.blue,
+  playSound: true,
+  icon: '@mipmap/ic_launcher',
+));
 
-    Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
   print('A bg message just showed up :  ${message.messageId}');
 }
-
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -45,7 +41,8 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
   await flutterLocalNotificationsPlugin
-      .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>()
+      .resolvePlatformSpecificImplementation<
+          AndroidFlutterLocalNotificationsPlugin>()
       ?.createNotificationChannel(channel);
 
   await FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
@@ -54,12 +51,10 @@ void main() async {
     sound: true,
   );
 
-
   runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -70,7 +65,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/',
+      initialRoute: '/worker',
       routes: {
         '/': (context) => LoginScreen(),
         '/worker': (context) => WorkerHome(),

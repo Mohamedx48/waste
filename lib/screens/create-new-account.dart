@@ -26,9 +26,7 @@ class _CreateNewAccountState extends State<CreateNewAccount> {
 
   @override
   Widget build(BuildContext context) {
-    Size size = MediaQuery
-        .of(context)
-        .size;
+    Size size = MediaQuery.of(context).size;
     return Stack(
       children: [
         BackgroundImage(image: 'assets/images/mx.jpg'),
@@ -101,9 +99,7 @@ class _CreateNewAccountState extends State<CreateNewAccount> {
                     PasswordInput(
                       icon: FontAwesomeIcons.lock,
                       hint: 'Password',
-                      controller:passwordCtrl,
-
-
+                      controller: passwordCtrl,
                       inputAction: TextInputAction.next,
                     ),
                     PasswordInput(
@@ -115,7 +111,9 @@ class _CreateNewAccountState extends State<CreateNewAccount> {
                       height: 25,
                     ),
                     RoundedButton(
-                      buttonName: 'Register', onTap: _onCreateAccount,),
+                      buttonName: 'Register',
+                      onTap: _onCreateAccount,
+                    ),
                     SizedBox(
                       height: 30,
                     ),
@@ -156,11 +154,9 @@ class _CreateNewAccountState extends State<CreateNewAccount> {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(
-          email: emailCtrl.text,
-          password: passwordCtrl.text
-      );
+              email: emailCtrl.text, password: passwordCtrl.text);
       print(userCredential);
-      _addNewUserToFirestore();
+
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
@@ -172,13 +168,15 @@ class _CreateNewAccountState extends State<CreateNewAccount> {
     }
   }
 
-  void _addNewUserToFirestore() {
+  void _addNewUserToFirestore() async {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
-    users.add({
-      'username': usernameCtrl.text, // John Doe
-      'email': emailCtrl.text,
-      'type': 'user'
-    })
+    users
+        .add({
+          'username': usernameCtrl.text, // John Doe
+          'email': emailCtrl.text,
+          'type': 'user'
+        
+        })
         .then((value) => Navigator.of(context).pop())
         .catchError((error) => print("Failed to add user: $error"));
   }

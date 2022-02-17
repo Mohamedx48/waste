@@ -1,11 +1,13 @@
 import 'dart:math';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cloud_functions/cloud_functions.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:smartcity_app/firebase_options.dart';
 
 import '../main.dart';
 
@@ -29,40 +31,34 @@ class _WorkerHomeState extends State<WorkerHome>
     await Firebase.initializeApp();
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       RemoteNotification? notification = message.notification;
-      if (notification != null ) {
-        flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body, androidDetails);
+      if (notification != null) {
+        flutterLocalNotificationsPlugin.show(notification.hashCode,
+            notification.title, notification.body, androidDetails);
       }
       // copy code here
     });
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       RemoteNotification? notification = message.notification;
-      if (notification != null ) {
-        flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body, androidDetails);
+      if (notification != null) {
+        flutterLocalNotificationsPlugin.show(notification.hashCode,
+            notification.title, notification.body, androidDetails);
       }
     });
     FirebaseMessaging.onBackgroundMessage((RemoteMessage message) {
       RemoteNotification? notification = message.notification;
-      if (notification != null ) {
-        flutterLocalNotificationsPlugin.show(
-            notification.hashCode,
-            notification.title,
-            notification.body, androidDetails);
+      if (notification != null) {
+        flutterLocalNotificationsPlugin.show(notification.hashCode,
+            notification.title, notification.body, androidDetails);
       }
       return Future.value(null);
     });
   }
 
-
   @override
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
+
     handleNotification();
     _getData();
   }
@@ -94,15 +90,14 @@ class _WorkerHomeState extends State<WorkerHome>
         child: StreamBuilder(
           stream: FirebaseDatabase.instance.ref('dist').onValue,
           builder: (c, snapshot) {
+            if (!snapshot.hasData) return CircularProgressIndicator();
             final data = snapshot.data as DatabaseEvent;
 
             final distance = data.snapshot.value;
             if (int.parse(distance.toString()) <= 8) {
-              print("$distance send notification.. the bin is full");
-               FirebaseFunctions.instance
-                  .httpsCallable('pushNotification')
-                  .call({});
+              sendNotification("الحق", "الزبالة يبنى");
 
+              print("$distance send notification.. the bin is full");
             }
 
             return Column(
@@ -113,15 +108,11 @@ class _WorkerHomeState extends State<WorkerHome>
                   'Distance $distance',
                   style: TextStyle(fontSize: 20),
                 ),
-                ElevatedButton(onPressed: (){
-
-                  flutterLocalNotificationsPlugin.show(
-                      Random().nextInt(10000),
-                      "Testing ",
-                      "How you doin ?",
-                      androidDetails);
-                }, child: Text("press Here"))
-
+                ElevatedButton(
+                    onPressed: () {
+                      sendNotification("الحق", "الزبالة يبنى");
+                    },
+                    child: Text("press Here"))
               ],
             );
           },

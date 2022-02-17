@@ -96,14 +96,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _onLogin() async {
     try {
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: emailCtrl.text,
-          password: passwordCtrl.text,
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailCtrl.text,
+        password: passwordCtrl.text,
       );
-      print('user login successfully: ID: ${userCredential.user?.uid}');
-
+      print('user login successfully: ID: ${userCredential.user!.uid}');
       _getUserDataFromFireStore();
-
     } on FirebaseAuthException catch (e) {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
@@ -116,27 +115,25 @@ class _LoginScreenState extends State<LoginScreen> {
 
   _showAlert(String msg) {
     SnackBar snackbar = SnackBar(content: Text(msg));
-
     ScaffoldMessenger.of(context).showSnackBar(snackbar);
   }
 
   void _getUserDataFromFireStore() {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
-    users.get()
-        .then((value) {
-          final userData = value.docs.firstWhere((element) => element['email'] == emailCtrl.text);
-          print('UserData: $userData ${userData.get('type')}');
-
-
-          if (userData.get('type') == 'user') {
-            //TODO: navigate to user screens
-            print('this is a default User');
-          } else {
-            //TODO: navigate to employee screens
-            print('this is an Employee');
-            Navigator.pushNamed(context, 'Map');
-          }
-    })
-        .catchError((error) => print("Failed to add user: $error"));
+    users.get().then((value) {
+      final userData = value.docs
+          .firstWhere((element) => element['email'] == emailCtrl.text);
+      print('UserData: $userData ');
+     
+      if (userData.get('type') == 'user') {
+        //TODO: navigate to user screens
+        print('this is a default User');
+        Navigator.pushNamedAndRemoveUntil(context, '/worker', (r) => false);
+      } else {
+        //TODO: navigate to employee screens
+        print('this is an Employee');
+        Navigator.pushNamedAndRemoveUntil(context, 'Map', (r) => false);
+      }
+    }).catchError((error) => print("Failed to add user: $error"));
   }
 }
