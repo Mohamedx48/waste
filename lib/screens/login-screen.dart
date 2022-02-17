@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:smartcity_app/main.dart';
 import 'package:smartcity_app/pallete.dart';
 import 'package:smartcity_app/widgets/widgets.dart';
 
@@ -121,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
   void _getUserDataFromFireStore() {
     CollectionReference users = FirebaseFirestore.instance.collection('users');
     users.get().then((value) {
-      final userData = value.docs
+       userData = value.docs
           .firstWhere((element) => element['email'] == emailCtrl.text);
       print('UserData: $userData ');
      

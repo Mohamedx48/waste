@@ -58,19 +58,15 @@ class _WorkerHomeState extends State<WorkerHome>
   void initState() {
     super.initState();
     _controller = AnimationController(vsync: this);
-
-    handleNotification();
+    if (userData.get('type') == 'employee') handleNotification();
     _getData();
   }
 
   _getData() async {
     DatabaseReference ref = FirebaseDatabase.instance.ref();
-
     try {
       DatabaseEvent event = await ref.once();
-
-      print(event.snapshot.value); //
-
+      print(event.snapshot.value); 
     } catch (e) {
       print(e);
     }
@@ -96,7 +92,6 @@ class _WorkerHomeState extends State<WorkerHome>
             final distance = data.snapshot.value;
             if (int.parse(distance.toString()) <= 8) {
               sendNotification("الحق", "الزبالة يبنى");
-
               print("$distance send notification.. the bin is full");
             }
 
@@ -108,11 +103,6 @@ class _WorkerHomeState extends State<WorkerHome>
                   'Distance $distance',
                   style: TextStyle(fontSize: 20),
                 ),
-                ElevatedButton(
-                    onPressed: () {
-                      sendNotification("الحق", "الزبالة يبنى");
-                    },
-                    child: Text("press Here"))
               ],
             );
           },

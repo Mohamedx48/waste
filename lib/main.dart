@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:smartcity_app/firebase_options.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:smartcity_app/screens/commit.dart';
 import 'package:smartcity_app/screens/maps-screen.dart';
 import 'package:smartcity_app/screens/worker-home.dart';
 import 'screens/screens.dart';
@@ -33,6 +34,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print('A bg message just showed up :  ${message.messageId}');
 }
 
+var userData;
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
@@ -65,9 +67,11 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      initialRoute: '/worker',
+      initialRoute: '/',
+      debugShowCheckedModeBanner: false,
       routes: {
         '/': (context) => LoginScreen(),
+        '/commit': (context) => UserCommit(),
         '/worker': (context) => WorkerHome(),
         'ForgotPassword': (context) => ForgotPassword(),
         'CreateNewAccount': (context) => CreateNewAccount(),

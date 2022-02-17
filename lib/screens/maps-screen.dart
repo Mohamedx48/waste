@@ -50,7 +50,6 @@ class _MapsScreenState extends State<MapsScreen>
 
   @override
   Widget build(BuildContext context) {
-
     return new Scaffold(
       body: GoogleMap(
         mapType: MapType.hybrid,
@@ -70,18 +69,19 @@ class _MapsScreenState extends State<MapsScreen>
       final GoogleMapController controller = await _controller.future;
       controller.animateCamera(CameraUpdate.newCameraPosition(userLocation!));
 
+      // List gps = [
+      //   LatLng(37.43296265331129, -122.08832357078792),
+      //   LatLng(37.43296265331129, -122.08832357078792),
+      //   LatLng(37.43296265331129, -122.08832357078792),
+      // ];
       _addMarker(userLocation?.target.latitude ?? 0,
           userLocation?.target.longitude ?? 0);
       _addMarker(37.43296265331129, -122.08832357078792);
+      // _addAllMarkers(gps);
     }
   }
 
   void _addMarker(double lat, double lng) {
-    final int markerCount = markers.length;
-
-    // if (markerCount == 12) {
-    //   return;
-    // }
     final String markerIdVal = '${Random().nextDouble()}';
     final MarkerId markerId = MarkerId(markerIdVal);
     final Marker marker = Marker(
@@ -94,6 +94,24 @@ class _MapsScreenState extends State<MapsScreen>
     );
 
     markers.add(marker);
+    setState(() {});
+  }
+
+  void _addAllMarkers(List<LatLng> gps) {
+    gps.forEach((val) {
+      final String markerIdVal = '${Random().nextDouble()}';
+      final MarkerId markerId = MarkerId(markerIdVal);
+      final Marker marker = Marker(
+        markerId: markerId,
+        position: LatLng(
+          val.latitude + sin(_markerIdCounter * pi / 6.0) / 20.0,
+          val.longitude + cos(_markerIdCounter * pi / 6.0) / 20.0,
+        ),
+        infoWindow: InfoWindow(title: markerIdVal, snippet: '*'),
+      );
+
+      markers.add(marker);
+    });
     setState(() {});
   }
 
